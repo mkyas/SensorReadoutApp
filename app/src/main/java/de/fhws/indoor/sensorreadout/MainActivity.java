@@ -6,7 +6,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.location.LocationManager;
 import android.media.MediaPlayer;
 import android.os.Build;
@@ -15,11 +19,15 @@ import android.os.SystemClock;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.preference.PreferenceManager;
 import androidx.core.app.ActivityCompat;
 //import android.support.wearable.activity.WearableActivity;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.HapticFeedbackConstants;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -30,7 +38,11 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.ToggleButton;
 
+import com.androidplot.Plot;
+
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -62,11 +74,11 @@ public class MainActivity extends AppCompatActivity {
     //private final Logger logger = new Logger(this);
     //private final LoggerRAM logger = new LoggerRAM(this);
     private final Logger logger = new OrderedLogger(this);
-    private Button btnStart;
+    private ToggleButton btnRecord;
     private Button btnMetadata;
-    private Button btnStop;
     private Button btnGround;
     private Button btnSettings;
+    private Button btnPlot;
     private ProgressBar prgCacheFillStatus;
     private TableLayout activityButtonContainer;
     private HashMap<PedestrianActivity, PedestrianActivityButton> activityButtons = new HashMap<>();
@@ -85,6 +97,12 @@ public class MainActivity extends AppCompatActivity {
     // static context access
     private static Context context;
 
+    // fragments
+    private static PlotFragment plotFragment;
+
+    // decimal formatter
+    private static DecimalFormat df2 = new DecimalFormat("#.##");
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
         mpGround = MediaPlayer.create(this, R.raw.go);
         mpFailure = MediaPlayer.create(this, R.raw.error);
 
-        //init Path spinner
+        // init Path spinner
         final Spinner pathSpinner = (Spinner) findViewById(R.id.pathspinner);
         List<String> pathList = new ArrayList<String>();
         for (int i=0; i<=255; i++){
@@ -112,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
         pathDataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         pathSpinner.setAdapter(pathDataAdapter);
 
-        //init GroundTruthPoint spinner
+        // init GroundTruthPoint spinner
         final Spinner groundSpinner = (Spinner) findViewById(R.id.groundspinner);
         List<String> groundList = new ArrayList<String>();
         for (int i=0; i<=255; i++){
@@ -123,49 +141,79 @@ public class MainActivity extends AppCompatActivity {
         groundDataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         groundSpinner.setAdapter(groundDataAdapter);
 
-        //get Buttons
-        btnStart = (Button) findViewById(R.id.btnStart);
+        // get Buttons
+        btnRecord = (ToggleButton) findViewById(R.id.btnRecord);
         btnMetadata = (Button) findViewById(R.id.btnMetadata);
-        btnStop = (Button) findViewById(R.id.btnStop);
         btnGround = (Button) findViewById(R.id.btnGround);
         btnSettings = (Button) findViewById(R.id.btnSettings);
+        btnPlot = (Button) findViewById(R.id.btnPlot);
         activityButtonContainer = (TableLayout) findViewById(R.id.pedestrianActivityButtonContainer);
 
         prgCacheFillStatus = (ProgressBar) findViewById(R.id.prgCacheFillStatus);
+
+        // Change color of progress bar
+        prgCacheFillStatus.setProgressTintList(ColorStateList.valueOf(Color.WHITE));
 
         // log GroundTruth ButtonClicks using sensor number 99
         final GroundTruth grndTruth = new GroundTruth(this);
         sensors.add(grndTruth);
         grndTruth.setListener(new mySensor.SensorListener() {
             @Override public void onData(final long timestamp, final String csv) { return; }
-            @Override public void onData(SensorType id, final long timestamp, final String csv) {add(id, csv, timestamp); }
+            @Override public void onData(SensorType id, final long timestamp, final String csv) { add(id, csv, timestamp); }
         });
 
-
-        btnStart.setOnClickListener(new View.OnClickListener() {
+        btnRecord.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
+                if(btnRecord.isChecked()) {
+                    if(!isInitialized){
+                        start();
+                        isInitialized = true;
+                        mpStart.start();
 
-                if(!isInitialized){
-                    start();
-                    isInitialized = true;
-                    mpStart.start();
+                        //Write path id and ground truth point num
+                        grndTruth.writeInitData(Integer.parseInt(pathSpinner.getSelectedItem().toString().replaceAll("[\\D]", "")),
+                                Integer.parseInt(groundSpinner.getSelectedItem().toString().replaceAll("[\\D]", "")));
 
-                    //Write path id and ground truth point num
-                    grndTruth.writeInitData(Integer.parseInt(pathSpinner.getSelectedItem().toString().replaceAll("[\\D]", "")),
-                            Integer.parseInt(groundSpinner.getSelectedItem().toString().replaceAll("[\\D]", "")));
+                        //Write the first groundTruthPoint
+                        grndTruth.writeGroundTruth(groundTruthCounter);
 
-                    //Write the first groundTruthPoint
-                    grndTruth.writeGroundTruth(groundTruthCounter);
+                        //Write first activity
+                        add(SensorType.PEDESTRIAN_ACTIVITY, PedestrianActivity.STANDING.toString() + ";" + PedestrianActivity.STANDING.ordinal(), Logger.BEGINNING_TS);
 
-                    //Write first activity
-                    add(SensorType.PEDESTRIAN_ACTIVITY, PedestrianActivity.STANDING.toString() + ";" + PedestrianActivity.STANDING.ordinal(), Logger.BEGINNING_TS);
+                        //Disable the spinners
+                        groundSpinner.setEnabled(false);
+                        pathSpinner.setEnabled(false);
 
-                    //Disable the spinners
-                    groundSpinner.setEnabled(false);
-                    pathSpinner.setEnabled(false);
-                }
-                else{
-                    mpFailure.start();
+                        //Change button to represent stop recording
+                        btnRecord.setBackgroundResource(R.drawable.btnstopcolor);
+                    }
+                    else{
+                        mpFailure.start();
+                    }
+                } else {
+                    if(isInitialized){
+                        //write the last groundTruthPoint
+                        grndTruth.writeGroundTruth(++groundTruthCounter);
+                        groundTruthCounter = 0;
+
+                        btnGround.setText("Ground Truth");
+                        stop();
+                        isInitialized = false;
+                        mpStop.start();
+
+                        //Enable the spinners
+                        groundSpinner.setEnabled(true);
+                        pathSpinner.setEnabled(true);
+
+                        //reset activity buttons
+                        setActivityBtn(PedestrianActivity.STANDING, false);
+
+                        //Change button to represent start recording
+                        btnRecord.setBackgroundResource(R.drawable.btnstartcolor);
+                    }
+                    else{
+                        mpFailure.start();
+                    }
                 }
             }
         });
@@ -190,31 +238,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        btnStop.setOnClickListener(new View.OnClickListener() {
-            @Override public void onClick(View v) {
-                if(isInitialized){
-                    //write the last groundTruthPoint
-                    grndTruth.writeGroundTruth(++groundTruthCounter);
-                    groundTruthCounter = 0;
-
-                    btnGround.setText("Ground Truth");
-                    stop();
-                    isInitialized = false;
-                    mpStop.start();
-
-                    //Enable the spinners
-                    groundSpinner.setEnabled(true);
-                    pathSpinner.setEnabled(true);
-
-                    //reset activity buttons
-                    setActivityBtn(PedestrianActivity.STANDING, false);
-                }
-                else{
-                    mpFailure.start();
-                }
-            }
-        });
-
         btnGround.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
                 if(isInitialized) {
@@ -230,6 +253,24 @@ public class MainActivity extends AppCompatActivity {
                 }
                 else{
                     mpFailure.start();
+                }
+            }
+        });
+
+        btnPlot.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) {
+                if (plotFragment == null) {
+                    FragmentManager manager = getSupportFragmentManager();
+                    FragmentTransaction transaction = manager.beginTransaction();
+                    transaction.addToBackStack(null);
+
+                    plotFragment = PlotFragment.newInstance();
+
+                    transaction.replace(R.id.main, plotFragment);
+                    transaction.commit();
+                } else {
+                    plotFragment = null;
+                    getSupportFragmentManager().popBackStack();
                 }
             }
         });
@@ -287,6 +328,8 @@ public class MainActivity extends AppCompatActivity {
 
         logger.addCSV(id, timestamp, csv);
 
+        if (plotFragment != null)
+            plotFragment.provideDataToPlotter(id, csv);
 
         // update UI for WIFI/BEACON/GPS
         if (id == SensorType.WIFIRTT || id == SensorType.IBEACON || id == SensorType.GPS) {
@@ -322,7 +365,11 @@ public class MainActivity extends AppCompatActivity {
                 final TextView txt = (TextView) findViewById(R.id.txtBuffer);
                 final float elapsedMinutes = (timestamp - logger.getStartTS()) / 1000.0f / 1000.0f / 1000.0f / 60.0f;
                 final int kBPerMin = (int) (logger.getSizeTotal() / 1024.0f / elapsedMinutes);
-                txt.setText((logger.getSizeTotal() / 1024) + "k, " + logger.getEventCnt() + ", " + kBPerMin + "kB/m");
+                txt.setText(
+                        ((logger.getSizeTotal() / 1024) > 1000) ?
+                                (df2.format((double)logger.getSizeTotal() / 1024 / 1000) + " MB, " + kBPerMin + " kB/m") :
+                                (logger.getSizeTotal() / 1024 + " kB, " + kBPerMin + " kB/m")
+                );
                 prgCacheFillStatus.setProgress((int)(logger.getCacheLevel() * 1000));
             }
         });
@@ -381,7 +428,6 @@ public class MainActivity extends AppCompatActivity {
     public static Context getAppContext() {
         return MainActivity.context;
     }
-
 
 
 
