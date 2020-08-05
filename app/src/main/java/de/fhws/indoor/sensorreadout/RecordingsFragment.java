@@ -17,6 +17,9 @@ import android.widget.TextView;
 import java.io.File;
 import java.util.ArrayList;
 
+/**
+ * @author Elias (https://github.com/Zatrac)
+ */
 public class RecordingsFragment extends Fragment {
 
     private static final String ARG_PARAM1 = "Files";
@@ -28,7 +31,7 @@ public class RecordingsFragment extends Fragment {
 
 
     public RecordingsFragment() {
-        // Required empty public constructor
+
     }
 
     public static RecordingsFragment newInstance(File[] files) {

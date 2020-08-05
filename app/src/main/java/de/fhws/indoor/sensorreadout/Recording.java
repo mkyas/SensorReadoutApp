@@ -8,6 +8,9 @@ import androidx.core.content.FileProvider;
 import java.io.File;
 import java.util.Date;
 
+/**
+ * @author Elias (https://github.com/Zatrac)
+ */
 public class Recording {
     private File RecordingFile;
     private String FileName;

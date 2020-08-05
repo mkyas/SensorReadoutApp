@@ -24,6 +24,7 @@ import de.fhws.indoor.sensorreadout.sensors.SensorType;
 
 /**
  A fragment which hosts the plot view
+ * @author Elias (https://github.com/Zatrac)
  */
 public class PlotFragment extends Fragment {
     private static final int HISTORY_SIZE = 1500;
@@ -47,7 +48,7 @@ public class PlotFragment extends Fragment {
     private ToggleButton btnPausePlot;
 
     public PlotFragment() {
-        // Required empty public constructor
+
     }
 
     public static PlotFragment newInstance(boolean isInitialized) {

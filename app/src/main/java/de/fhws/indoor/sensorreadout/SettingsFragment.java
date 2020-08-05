@@ -24,6 +24,7 @@ import de.fhws.indoor.sensorreadout.sensors.WiFiRTT;
 
 /**
  * @author Markus Ebner
+ * @author Elias (https://github.com/Zatrac)
  */
 public class SettingsFragment extends PreferenceFragmentCompat {
 
