@@ -28,13 +28,14 @@ import de.fhws.indoor.sensorreadout.sensors.SensorType;
 public class PlotFragment extends Fragment {
     private static final int HISTORY_SIZE = 1500;
 
+    public Redrawer redrawer;
+
     private View plotView;
     private SimpleXYSeries xBuffer;
     private SimpleXYSeries yBuffer;
     private SimpleXYSeries zBuffer;
     private XYPlot plotClass;
     private SensorType currentSensorToPlot = SensorType.ACCELEROMETER;
-    public Redrawer redrawer;
 
     private Button btnAccelerometer;
     private Button btnLinearAccelerometer;
@@ -49,9 +50,10 @@ public class PlotFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static PlotFragment newInstance() {
+    public static PlotFragment newInstance(boolean isInitialized) {
         PlotFragment fragment = new PlotFragment();
         Bundle args = new Bundle();
+        args.putBoolean("isInitialized", isInitialized);
         fragment.setArguments(args);
         return fragment;
     }
@@ -165,7 +167,12 @@ public class PlotFragment extends Fragment {
         plotClass.setLinesPerRangeLabel(3);
         plotClass.setDomainBoundaries(0, HISTORY_SIZE, BoundaryMode.FIXED);
 
-        redrawer = new Redrawer( plotClass, 100, true);
+        // If the application is already recording data, start the redrawer immediately
+        if (getArguments().getBoolean("isInitialized")) {
+            redrawer = new Redrawer(plotClass, 100, true);
+        } else {
+            redrawer = new Redrawer(plotClass, 100, false);
+        }
 
         return plotView;
     }

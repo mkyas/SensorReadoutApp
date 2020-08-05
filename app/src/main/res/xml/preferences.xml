@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
-
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
     <MultiSelectListPreference
         app:entries="@array/prefActiveSensorsEntries"
         app:entryValues="@array/prefActiveSensorsValues"
@@ -20,5 +20,13 @@
         app:key="prefActiveActions"
         app:summary="@string/prefActiveActionsSummary"
         app:title="@string/prefActiveActions" />
+    <Preference
+        app:title="Metadata"
+        app:key="prefMetadata"
+        app:summary="Add optional information to your recordings" />
+    <Preference
+        app:title="Recordings"
+        app:key="prefRecordings"
+        app:summary="View and share previous recordings" />
 
 </PreferenceScreen>

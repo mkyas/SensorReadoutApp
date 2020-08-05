@@ -30,7 +30,7 @@ public class WiFi extends mySensor {
 	public WiFi(final Activity act) {
 
 		this.act = act;
-		this.wifi = (WifiManager) act.getSystemService(Context.WIFI_SERVICE);
+		this.wifi = (WifiManager) act.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         isReceiverRegistered = true;
 
 		//this.wifi.setWifiEnabled(false);

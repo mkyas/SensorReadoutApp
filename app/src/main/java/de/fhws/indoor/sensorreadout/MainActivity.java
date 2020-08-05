@@ -22,6 +22,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 import androidx.core.app.ActivityCompat;
 //import android.support.wearable.activity.WearableActivity;
@@ -75,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
     //private final LoggerRAM logger = new LoggerRAM(this);
     private final Logger logger = new OrderedLogger(this);
     private ToggleButton btnRecord;
-    private Button btnMetadata;
+    private Button btnBeacons;
     private Button btnGround;
     private Button btnSettings;
     private Button btnPlot;
@@ -85,14 +87,14 @@ public class MainActivity extends AppCompatActivity {
     private PedestrianActivity currentPedestrianActivity = PedestrianActivity.STANDING;
 
     private int groundTruthCounter = 0;
-    private boolean isInitialized = false;
+    private static boolean isInitialized = false;
 
     final private int MY_PERMISSIONS_REQUEST_READ_BT = 123;
     final private int MY_PERMISSIONS_REQUEST_READ_HEART = 321;
 
     // file metadata
-    private String metaPerson = "";
-    private String metaComment = "";
+    private static String metaPerson = "";
+    private static String metaComment = "";
 
     // static context access
     private static Context context;
@@ -143,7 +145,6 @@ public class MainActivity extends AppCompatActivity {
 
         // get Buttons
         btnRecord = (ToggleButton) findViewById(R.id.btnRecord);
-        btnMetadata = (Button) findViewById(R.id.btnMetadata);
         btnGround = (Button) findViewById(R.id.btnGround);
         btnSettings = (Button) findViewById(R.id.btnSettings);
         btnPlot = (Button) findViewById(R.id.btnPlot);
@@ -186,6 +187,12 @@ public class MainActivity extends AppCompatActivity {
 
                         //Change button to represent stop recording
                         btnRecord.setBackgroundResource(R.drawable.btnstopcolor);
+
+                        //Clean plotter and restart
+                        if (plotFragment != null) {
+                            plotFragment.cleanPlotterData();
+                            plotFragment.redrawer.start();
+                        }
                     }
                     else{
                         mpFailure.start();
@@ -210,30 +217,14 @@ public class MainActivity extends AppCompatActivity {
 
                         //Change button to represent start recording
                         btnRecord.setBackgroundResource(R.drawable.btnstartcolor);
+
+                        //Stop plotter
+                        if (plotFragment != null)
+                            plotFragment.redrawer.pause();
                     }
                     else{
                         mpFailure.start();
                     }
-                }
-            }
-        });
-
-        btnMetadata.setOnClickListener(new View.OnClickListener() {
-            @Override public void onClick(View v) {
-                if(!isInitialized){
-                    MetadataFragment metadataDialog = new MetadataFragment(metaPerson, metaComment, new MetadataFragment.ResultListener() {
-                        @Override public void onCommit(String person, String comment) {
-                            metaPerson = person;
-                            metaComment = comment;
-                            Log.d("MetadataDialog", "Person: " + person + " Comment: " + comment);
-                        }
-
-                        @Override public void onClose() {}
-                    });
-                    metadataDialog.show(getSupportFragmentManager(), "metadata");
-                }
-                else{
-                    mpFailure.start();
                 }
             }
         });
@@ -264,7 +255,8 @@ public class MainActivity extends AppCompatActivity {
                     FragmentTransaction transaction = manager.beginTransaction();
                     transaction.addToBackStack(null);
 
-                    plotFragment = PlotFragment.newInstance();
+                    // state of isInitialized determines if the plotter starts drawing immediately
+                    plotFragment = PlotFragment.newInstance(isInitialized);
 
                     transaction.replace(R.id.main, plotFragment);
                     transaction.commit();
@@ -287,6 +279,12 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    // Get and set for metadata
+    public static void setComment( String comment ) { metaComment = comment; }
+    public static void setPerson( String person ) { metaPerson = person; }
+    public static String getComment() { return metaComment; }
+    public static String getPerson() { return metaPerson; }
+    public static boolean isInitialized() { return isInitialized; }
 
     private void setActivityBtn(PedestrianActivity newActivity, boolean logChange){
         if(activityButtons.containsKey(currentPedestrianActivity)) {
@@ -428,9 +426,6 @@ public class MainActivity extends AppCompatActivity {
     public static Context getAppContext() {
         return MainActivity.context;
     }
-
-
-
 
 
     protected void setupActivityButtons() {
