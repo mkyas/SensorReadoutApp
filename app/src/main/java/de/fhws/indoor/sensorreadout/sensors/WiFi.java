@@ -23,7 +23,7 @@ public class WiFi extends mySensor {
 
 	private final Activity act;
 	private final WifiManager wifi;
-	private BroadcastReceiver receiver;
+	private final BroadcastReceiver receiver;
     private boolean isReceiverRegistered;
 	private boolean isFirstMeasurement = true;
 
@@ -97,7 +97,7 @@ public class WiFi extends mySensor {
 	public void onResume(Activity act) {
 		act.registerReceiver(this.receiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
         isReceiverRegistered = true;
-		wifi.createWifiLock(wifi.WIFI_MODE_SCAN_ONLY, "ipin");
+		wifi.createWifiLock(WifiManager.WIFI_MODE_SCAN_ONLY, "ipin");
 		//wifi.disconnect();
 
 

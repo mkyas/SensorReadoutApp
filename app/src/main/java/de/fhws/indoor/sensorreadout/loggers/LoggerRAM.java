@@ -29,7 +29,7 @@ public final class LoggerRAM extends Logger {
     private File file;
     private FileOutputStream fos;
 
-    private ArrayList<LogEntry> buffer = new ArrayList<>();
+    private final ArrayList<LogEntry> buffer = new ArrayList<>();
 
     public LoggerRAM(Context context) {
         super(context);
@@ -62,7 +62,7 @@ public final class LoggerRAM extends Logger {
                 try {
                     fos.write(e.csv.getBytes());
                 } catch (final Exception ex) {
-                    ex.printStackTrace();;
+                    ex.printStackTrace();
                 }
             }
             // done

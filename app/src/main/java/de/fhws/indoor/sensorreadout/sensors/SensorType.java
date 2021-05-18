@@ -35,7 +35,7 @@ public enum SensorType {
 
     ;
 
-    private int id;
+    private final int id;
 
     SensorType(final int id) {
         this.id = id;

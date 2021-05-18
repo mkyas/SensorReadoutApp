@@ -12,10 +12,10 @@ import java.util.Date;
  * @author Elias (https://github.com/Zatrac)
  */
 public class Recording {
-    private File RecordingFile;
-    private String FileName;
-    private Uri uri;
-    private Date lastModified;
+    private final File RecordingFile;
+    private final String FileName;
+    private final Uri uri;
+    private final Date lastModified;
 
     public Recording(File file) {
         RecordingFile = file;

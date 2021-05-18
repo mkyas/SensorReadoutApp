@@ -31,7 +31,7 @@ public class GpsNew extends mySensor implements ConnectionCallbacks, OnConnectio
 
     protected GoogleApiClient mGoogleApiClient;
     protected Location mLastLocation;
-    private Activity act;
+    private final Activity act;
     private Location mCurrentLocation;
     private LocationRequest mLocationRequest;
 
@@ -167,9 +167,9 @@ public class GpsNew extends mySensor implements ConnectionCallbacks, OnConnectio
         // inform listeners
         if (listener != null){
             listener.onData(SensorType.GRAVITY, location.getElapsedRealtimeNanos(), //TODO: Is this correct? SystemClock.elapsedRealtimeNanos() otherwise..
-                    Double.toString(location.getLatitude()) + ";" +
-                            Double.toString(location.getLongitude()) + ";" +
-                            Double.toString(location.getAltitude()) + ";" +
+                    location.getLatitude() + ";" +
+                            location.getLongitude() + ";" +
+                            location.getAltitude() + ";" +
                             Double.toString(location.getBearing())
             );
         }

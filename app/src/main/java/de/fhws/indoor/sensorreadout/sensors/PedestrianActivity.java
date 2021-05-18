@@ -15,7 +15,7 @@ public enum PedestrianActivity {
     MESS_AROUND(6),
     ;
 
-    private int id;
+    private final int id;
 
     PedestrianActivity(final int id) {
         this.id = id;

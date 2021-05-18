@@ -111,11 +111,11 @@ public final class OrderedLogger extends Logger {
         private ArrayList<LogEntry> inputCache;
         private BlockingQueue<ArrayList<LogEntry>> pendingInputCaches;
         private ReorderThread reorderThread;
-        private ReorderBufferListener commitListener;
+        private final ReorderBufferListener commitListener;
 
         //statistics
-        private AtomicInteger cachedEntries = new AtomicInteger(0);
-        private AtomicInteger writtenEntries = new AtomicInteger(0);
+        private final AtomicInteger cachedEntries = new AtomicInteger(0);
+        private final AtomicInteger writtenEntries = new AtomicInteger(0);
         private long sizeTotal = 0;
 
         //                   #################

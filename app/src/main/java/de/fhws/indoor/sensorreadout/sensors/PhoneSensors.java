@@ -31,25 +31,25 @@ public class PhoneSensors extends mySensor implements SensorEventListener{
 
 	//private static final int SENSOR_TYPE_HEARTRATE = 65562;
 
-    private SensorManager sensorManager;
-    private Sensor acc;
-    private Sensor grav;
-   	private Sensor lin_acc;
-    private Sensor gyro;
-    private Sensor magnet;
-    private Sensor press;
-	private Sensor ori;
+    private final SensorManager sensorManager;
+    private final Sensor acc;
+    private final Sensor grav;
+   	private final Sensor lin_acc;
+    private final Sensor gyro;
+    private final Sensor magnet;
+    private final Sensor press;
+	private final Sensor ori;
 	//private Sensor heart;
-	private Sensor humidity;
-	private Sensor rotationVector;
-	private Sensor light;
-	private Sensor temperature;
-	private Sensor gameRotationVector;
+	private final Sensor humidity;
+	private final Sensor rotationVector;
+	private final Sensor light;
+	private final Sensor temperature;
+	private final Sensor gameRotationVector;
 
 	/** local gravity copy (needed for orientation matrix) */
-    private float[] mGravity = new float[3];
+    private final float[] mGravity = new float[3];
 	/** local geomagnetic copy (needed for orientation matrix) */
-    private float[] mGeomagnetic = new float[3];
+    private final float[] mGeomagnetic = new float[3];
 
 
 	/** ctor */
@@ -153,9 +153,9 @@ public class PhoneSensors extends mySensor implements SensorEventListener{
 			// inform listeners
 			if (listener != null){
 					listener.onData(SensorType.ORIENTATION_OLD, event.timestamp,
-					Float.toString(event.values[0]) + ";" +
-					Float.toString(event.values[1]) + ";" +
-					Float.toString(event.values[2])
+                            event.values[0] + ";" +
+                            event.values[1] + ";" +
+                            event.values[2]
 				);
 			}
 
@@ -212,16 +212,16 @@ public class PhoneSensors extends mySensor implements SensorEventListener{
 
 				if(event.values.length > 3){
 					listener.onData(SensorType.ROTATION_VECTOR, event.timestamp,
-							Float.toString(event.values[0]) + ";" +
-							Float.toString(event.values[1]) + ";" +
-							Float.toString(event.values[2]) + ";" +
-							Float.toString(event.values[3])
+                            event.values[0] + ";" +
+                                    event.values[1] + ";" +
+                                    event.values[2] + ";" +
+                                    event.values[3]
 					);
 				} else {
 					listener.onData(SensorType.ROTATION_VECTOR, event.timestamp,
-							Float.toString(event.values[0]) + ";" +
-							Float.toString(event.values[1]) + ";" +
-							Float.toString(event.values[2])
+                            event.values[0] + ";" +
+                                    event.values[1] + ";" +
+                                    event.values[2]
 					);
 				}
 
@@ -234,9 +234,9 @@ public class PhoneSensors extends mySensor implements SensorEventListener{
 			// inform listeners
 			if (listener != null){
 				listener.onData(SensorType.GYROSCOPE, event.timestamp,
-					Float.toString(event.values[0]) + ";" +
-					Float.toString(event.values[1]) + ";" +
-					Float.toString(event.values[2])
+                        event.values[0] + ";" +
+                            event.values[1] + ";" +
+                            event.values[2]
 				);
 			}
 
@@ -258,9 +258,9 @@ public class PhoneSensors extends mySensor implements SensorEventListener{
 			// inform listeners
 			if (listener != null){
 				listener.onData(SensorType.LINEAR_ACCELERATION, event.timestamp,
-					Float.toString(event.values[0]) + ";" +
-					Float.toString(event.values[1]) + ";" +
-					Float.toString(event.values[2])
+                        event.values[0] + ";" +
+                            event.values[1] + ";" +
+                            event.values[2]
 				);
 			}
 
@@ -271,9 +271,9 @@ public class PhoneSensors extends mySensor implements SensorEventListener{
 			// inform listeners
             if (listener != null){
                 listener.onData(SensorType.GRAVITY, event.timestamp,
-                        Float.toString(event.values[0]) + ";" +
-                        Float.toString(event.values[1]) + ";" +
-                        Float.toString(event.values[2])
+                        event.values[0] + ";" +
+                                event.values[1] + ";" +
+                                event.values[2]
                 );
             }
 
@@ -284,9 +284,9 @@ public class PhoneSensors extends mySensor implements SensorEventListener{
 			// inform listeners
 			if (listener != null){
 				listener.onData(SensorType.ACCELEROMETER, event.timestamp,
-					Float.toString(event.values[0]) + ";" +
-					Float.toString(event.values[1]) + ";" +
-					Float.toString(event.values[2])
+                        event.values[0] + ";" +
+                            event.values[1] + ";" +
+                            event.values[2]
 				);
 			}
 
@@ -304,9 +304,9 @@ public class PhoneSensors extends mySensor implements SensorEventListener{
 			// inform listeners
             if (listener != null){
                 listener.onData(SensorType.MAGNETIC_FIELD, event.timestamp,
-                        Float.toString(event.values[0]) + ";" +
-                        Float.toString(event.values[1]) + ";" +
-                        Float.toString(event.values[2])
+                        event.values[0] + ";" +
+                                event.values[1] + ";" +
+                                event.values[2]
                 );
             }
 
@@ -324,9 +324,9 @@ public class PhoneSensors extends mySensor implements SensorEventListener{
         	// inform listeners
         	if (listener != null) {
         		listener.onData(SensorType.GAME_ROTATION_VECTOR, event.timestamp,
-						Float.toString(event.values[0]) + ";" +
-								Float.toString(event.values[1]) + ";" +
-								Float.toString(event.values[2])
+                        event.values[0] + ";" +
+                                event.values[1] + ";" +
+                                event.values[2]
 				);
 			}
 		}
@@ -341,15 +341,15 @@ public class PhoneSensors extends mySensor implements SensorEventListener{
 		if (mGeomagnetic == null) {return;}
 
 		// calculate rotationMatrix and orientation
-		float R[] = new float[16];
-		float I[] = new float[16];
+		float[] R = new float[16];
+		float[] I = new float[16];
 
 		// derive rotation matrix from grav and geo sensors
 		boolean success = SensorManager.getRotationMatrix(R, I, mGravity, mGeomagnetic);
 		if (!success) {return;}
 
 		// derive orientation-vector using the rotation matrix
-		float orientationNew[] = new float[3];
+		float[] orientationNew = new float[3];
 		SensorManager.getOrientation(R, orientationNew);
 
 		// inform listeners
@@ -357,9 +357,9 @@ public class PhoneSensors extends mySensor implements SensorEventListener{
 
 			// orientation vector
 			listener.onData(SensorType.ORIENTATION_NEW, timestamp,
-				Float.toString(orientationNew[0]) + ";" +
-				Float.toString(orientationNew[1]) + ";" +
-				Float.toString(orientationNew[2])
+                    orientationNew[0] + ";" +
+                        orientationNew[1] + ";" +
+                        orientationNew[2]
 			);
 
 			// rotation matrix

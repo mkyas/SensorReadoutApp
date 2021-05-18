@@ -28,9 +28,9 @@ public class MetadataFragment extends DialogFragment {
 
     }
 
-    private String person;
-    private String comment;
-    private ResultListener resultListener;
+    private final String person;
+    private final String comment;
+    private final ResultListener resultListener;
 
     public MetadataFragment(@NonNull String person, @NonNull String comment, @NonNull ResultListener resultListener) {
         this.person = person;

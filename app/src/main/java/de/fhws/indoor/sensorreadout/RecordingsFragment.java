@@ -78,7 +78,7 @@ public class RecordingsFragment extends Fragment {
 
 class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.ViewHolder> {
 
-    private int ItemLayout;
+    private final int ItemLayout;
     static private ArrayList<Recording> Recordings;
 
     public RecordAdapter(int layoutId, ArrayList<Recording> recordings) {

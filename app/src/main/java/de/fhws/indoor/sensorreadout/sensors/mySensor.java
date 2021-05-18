@@ -12,10 +12,10 @@ public abstract class mySensor {
 	/** listen for sensor events */
 	public interface SensorListener {
 
-		public void onData(final long timestamp, final String csv);
+		void onData(final long timestamp, final String csv);
 
 		/** received data from the given sensor */
-        public void onData(final SensorType id, final long timestamp, final String csv);
+        void onData(final SensorType id, final long timestamp, final String csv);
 
 	}
 

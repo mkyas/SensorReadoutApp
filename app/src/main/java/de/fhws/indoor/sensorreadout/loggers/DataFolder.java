@@ -19,7 +19,7 @@ import de.fhws.indoor.sensorreadout.MyException;
  */
 public class DataFolder {
 
-    private Context context;
+    private final Context context;
     private File folder;
 
     public DataFolder(Context context, String folderName){

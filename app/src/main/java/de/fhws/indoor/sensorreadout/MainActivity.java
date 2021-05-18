@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
     private Button btnPlot;
     private ProgressBar prgCacheFillStatus;
     private TableLayout activityButtonContainer;
-    private HashMap<PedestrianActivity, PedestrianActivityButton> activityButtons = new HashMap<>();
+    private final HashMap<PedestrianActivity, PedestrianActivityButton> activityButtons = new HashMap<>();
     private PedestrianActivity currentPedestrianActivity = PedestrianActivity.STANDING;
 
     private int groundTruthCounter = 0;
@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
     private static PlotFragment plotFragment;
 
     // decimal formatter
-    private static DecimalFormat df2 = new DecimalFormat("#.##");
+    private static final DecimalFormat df2 = new DecimalFormat("#.##");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -235,7 +235,7 @@ public class MainActivity extends AppCompatActivity {
 
                     String numGroundTruthPoints = groundSpinner.getSelectedItem().toString().replaceAll("[\\D]", "");
 
-                    btnGround.setText(Integer.toString(++groundTruthCounter) + " / "
+                    btnGround.setText(++groundTruthCounter + " / "
                                     + numGroundTruthPoints
                     );
                     mpGround.start();

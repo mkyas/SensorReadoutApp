@@ -17,9 +17,9 @@ import de.fhws.indoor.sensorreadout.R;
 
 public class PedestrianActivityButton extends LinearLayout {
 
-    private LinearLayout innerBtn;
+    private final LinearLayout innerBtn;
     private boolean isActive = false;
-    private PedestrianActivity activity;
+    private final PedestrianActivity activity;
 
     public PedestrianActivityButton(Context context, PedestrianActivity activity, @DrawableRes int imageId) {
         super(context);

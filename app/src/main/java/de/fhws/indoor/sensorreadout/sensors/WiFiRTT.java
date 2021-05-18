@@ -32,7 +32,7 @@ public class WiFiRTT extends mySensor {
 
     private final Activity act;
     private final WifiRttManager rttManager;
-    private Executor mainExecutor;
+    private final Executor mainExecutor;
 
     private Thread ftmThread;
     private boolean ftmRunning;

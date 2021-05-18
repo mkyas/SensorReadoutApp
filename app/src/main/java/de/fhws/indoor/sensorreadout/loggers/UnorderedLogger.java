@@ -29,7 +29,7 @@ public final class UnorderedLogger extends Logger {
     private FileOutputStream fos;
 
     private volatile boolean addingStopped = false; // Just to be sure
-    private ArrayBlockingQueue<LogEntry> lineBuffer = new ArrayBlockingQueue<>(LINE_BUFFER_SIZE);
+    private final ArrayBlockingQueue<LogEntry> lineBuffer = new ArrayBlockingQueue<>(LINE_BUFFER_SIZE);
     private WriteBackWorker writeBackWorker;
 
     public UnorderedLogger(Context context) {

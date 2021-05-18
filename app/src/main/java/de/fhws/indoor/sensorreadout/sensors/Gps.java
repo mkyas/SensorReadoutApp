@@ -20,7 +20,7 @@ import de.fhws.indoor.sensorreadout.MyException;
 @TargetApi(23)
 public class Gps extends mySensor implements LocationListener {
 
-    private Activity act;
+    private final Activity act;
     private LocationManager locationManager;
     private Location location;
 
@@ -88,9 +88,9 @@ public class Gps extends mySensor implements LocationListener {
         // inform listeners
         if (listener != null){
             listener.onData(SensorType.GRAVITY, location.getElapsedRealtimeNanos(), //TODO: Is this correct? SystemClock.elapsedRealtimeNanos() otherwise..
-                    Double.toString(location.getLatitude()) + ";" +
-                    Double.toString(location.getLongitude()) + ";" +
-                    Double.toString(location.getAltitude()) + ";" +
+                    location.getLatitude() + ";" +
+                            location.getLongitude() + ";" +
+                            location.getAltitude() + ";" +
                     Double.toString(location.getBearing())
             );
         }

@@ -23,14 +23,14 @@ public abstract class Logger {
     public static final long BEGINNING_TS = -1;
 
     // work data
-    private StringBuilder stringBuilder = new StringBuilder();
+    private final StringBuilder stringBuilder = new StringBuilder();
     protected Context context;
     /** timestamp of logging start. all entries are relative to this one */
     protected long startTs = 0;
 
     //statistics
-    private AtomicLong statEntryCnt = new AtomicLong(0);
-    private AtomicLong statSizeTotal = new AtomicLong(0);
+    private final AtomicLong statEntryCnt = new AtomicLong(0);
+    private final AtomicLong statSizeTotal = new AtomicLong(0);
 
     public Logger(Context context) {
         this.context = context;
@@ -99,9 +99,9 @@ public abstract class Logger {
     }
 
     public static class FileMetadata {
-        private String person;
-        private String comment;
-        private Date date;
+        private final String person;
+        private final String comment;
+        private final Date date;
 
         public FileMetadata(String person, String comment) {
             this(person, comment, new Date());

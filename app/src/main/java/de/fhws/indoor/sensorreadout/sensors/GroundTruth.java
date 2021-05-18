@@ -25,8 +25,8 @@ public class GroundTruth extends mySensor {
     public void writeInitData(int pathID, int numGroundTruthPoints){
 
         if (listener != null){listener.onData(SensorType.GROUND_TRUTH_PATH, SystemClock.elapsedRealtimeNanos(),
-                Integer.toString(pathID) + ";" +
-                Integer.toString(numGroundTruthPoints)
+                pathID + ";" +
+                        numGroundTruthPoints
         );}
     }
 
